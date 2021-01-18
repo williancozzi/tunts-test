@@ -22,7 +22,7 @@ const getDoc = async () => {
 
         for (let index = 3; index < 27; index++) {
             let situation = sheet.getCell(index, 6); // access cells using a zero-based index
-            let name = sheet.getCell(index, 1).value;
+            let naf = sheet.getCell(index, 7);
             let missedClasses = sheet.getCell(index, 2).value;
 
             // average
@@ -34,26 +34,31 @@ const getDoc = async () => {
             // conditions
             if (average < 50) {
                 situation.value = "Reprovado por Nota";
+                naf.value = 0;
             } else if (average >= 50 && average < 70) {
                 situation.value = "Exame Final";
+                naf.value = Math.abs((calcNaf(average)));
             } else if (average >= 70) {
                 situation.value = "Aprovado";
+                naf.value = 0;
             }
 
             const percentageMiss = ((100 / classes) * missedClasses);
-            console.log(percentageMiss);
 
             if (percentageMiss > 25) {
                 situation.value = "Reprovado por Falta";
+                naf.value = 0;
             }
-
-            //console.log(name + ' ' + average + ' ' + situation.value);
 
         }
     } catch (error) {
-        console.log("Error: ", error);
+        console.log(error);
     }
     await sheet.saveUpdatedCells();
+}
+
+const calcNaf = (avg) => {
+    return Math.round(10 - avg);
 }
 
 getDoc();
